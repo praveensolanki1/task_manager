@@ -1,0 +1,61 @@
+{% extends 'task/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>My Tasks</h2>
+    
+  
+    <div class="mb-3">
+        <a href="{% url 'task_create' %}" class="btn btn-primary">Create New Task</a>
+        
+        
+        <a href="{% url 'task_list' %}?filter=completed{% if current_sort %}&sort={{ current_sort }}{% endif %}{% if current_sort_dir %}&sort_dir={{ current_sort_dir }}{% endif %}" class="btn btn-secondary{% if filter == 'completed' %} active{% endif %}">Show Completed</a>
+        <a href="{% url 'task_list' %}?filter=uncompleted{% if current_sort %}&sort={{ current_sort }}{% endif %}{% if current_sort_dir %}&sort_dir={{ current_sort_dir }}{% endif %}" class="btn btn-secondary{% if filter == 'uncompleted' %} active{% endif %}">Show Uncompleted</a>
+        
+        
+        <a href="{% url 'task_list' %}?sort=due_date{% if current_sort_dir == 'asc' %}&sort_dir=desc{% else %}&sort_dir=asc{% endif %}{% if filter %}&filter={{ filter }}{% endif %}" class="btn btn-secondary{% if current_sort == 'due_date' %} active{% endif %}">Sort by Due Date</a>
+        <a href="{% url 'task_list' %}?sort=title{% if current_sort_dir == 'asc' %}&sort_dir=desc{% else %}&sort_dir=asc{% endif %}{% if filter %}&filter={{ filter }}{% endif %}" class="btn btn-secondary{% if current_sort == 'title' %} active{% endif %}">Sort by Title</a>
+    </div>
+    
+    
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th><a href="?sort=title{% if current_sort_dir == 'asc' %}&sort_dir=desc{% else %}&sort_dir=asc{% endif %}{% if filter %}&filter={{ filter }}{% endif %}">Title</a></th>
+                <th>Description</th>
+                <th><a href="?sort=due_date{% if current_sort_dir == 'asc' %}&sort_dir=desc{% else %}&sort_dir=asc{% endif %}{% if filter %}&filter={{ filter }}{% endif %}">Due Date</a></th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for task in tasks %}
+            <tr>
+                <td>{{ task.title }}</td>
+                <td>{{ task.description|default_if_none:"No description" }}</td>
+                <td>{{ task.due_date|date:"Y-m-d" }}</td>
+                <td>
+                    {% if task.completed %}
+                        <span class="badge badge-success">Completed</span>
+                    {% else %}
+                        <span class="badge badge-warning">Pending</span>
+                    {% endif %}
+                </td>
+                <td>
+                    <a href="{% url 'task_update' task.id %}" class="btn btn-sm btn-outline-primary">Edit</a>
+                    <a href="{% url 'task_toggle_complete' task.id %}" class="btn btn-sm btn-outline-secondary">
+                        {% if task.completed %} Mark as Uncompleted {% else %} Mark as Completed {% endif %}
+                    </a>
+                    <a href="{% url 'task_delete' task.id %}" class="btn btn-sm btn-outline-danger">Delete</a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="5">No tasks found. <a href="{% url 'task_create' %}">Create a new task</a>.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

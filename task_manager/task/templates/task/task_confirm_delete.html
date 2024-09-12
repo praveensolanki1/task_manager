@@ -1,0 +1,33 @@
+{% extends 'task/base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Confirm Delete Task</h2>
+    
+    
+    <p>Are you sure you want to delete the task "<strong>{{ task.title }}</strong>"?</p>
+    
+    
+    <div class="card mt-3 mb-3">
+        <div class="card-body">
+            <h5 class="card-title">{{ task.title }}</h5>
+            <p class="card-text"><strong>Description:</strong> {{ task.description|default_if_none:"No description provided" }}</p>
+            <p class="card-text"><strong>Due Date:</strong> {{ task.due_date|date:"Y-m-d" }}</p>
+            <p class="card-text"><strong>Status:</strong> 
+                {% if task.completed %}
+                    <span class="badge badge-success">Completed</span>
+                {% else %}
+                    <span class="badge badge-warning">Pending</span>
+                {% endif %}
+            </p>
+        </div>
+    </div>
+
+  
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger">Yes, Delete</button>
+        <a href="{% url 'task_list' %}" class="btn btn-secondary">Cancel</a>
+    </form>
+</div>
+{% endblock %}
